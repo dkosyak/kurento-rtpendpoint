@@ -3,7 +3,13 @@ var remoteVideo2;
 var remoteVideo3;
 var remoteVideo4;
 var webRtcPeer;
-
+var ICE_config= {
+    'iceServers': [
+      {
+        'url': 'stun:95.216.146.44:3478'
+      }
+    ]
+  }
 window.onload = function() {	
 	console.log('Page loaded ...');	
     remoteVideo = document.getElementById('remoteVideo');	
@@ -12,7 +18,7 @@ window.onload = function() {
     remoteVideo4 = document.getElementById('remoteVideo4');	
 }
 
-var ws = new WebSocket('ws://192.168.6.6:8080');
+var ws = new WebSocket('ws://localhost:8080');
 
 window.onbeforeunload = function() {
     ws.close();
@@ -108,12 +114,14 @@ function btnStart(){
     //
     // Create the webRtcPeer instance
     // 
-    webRtcPeer = new RTCPeerConnection();
+    webRtcPeer = new RTCPeerConnection(ICE_config);
 
     webRtcPeer.onicecandidate = onIceCandidate;
     webRtcPeer.onopen = () => console.log('real time connection has established');
     webRtcPeer.onerror = (err) => console.log(`real time connection error ${err}`);
     webRtcPeer.onaddstream = (event) => {       
+        remoteVideo.srcObject = event.stream;
+        return;
         remoteVideo.src = window.URL.createObjectURL(event.stream);
         remoteVideo2.src = window.URL.createObjectURL(event.stream);
         remoteVideo3.src = window.URL.createObjectURL(event.stream);

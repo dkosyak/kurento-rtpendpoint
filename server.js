@@ -3,8 +3,10 @@ var session = require('express-session')
 var ws = require('ws');
 var KurentoClient = require('./Kurento/KurentoClient');
 var fs = require('fs');
+//var MemoryStore = express.session.MemoryStore;
 
-const KURENTO_WS_URL = 'ws://192.168.6.20:8888/kurento';
+//var store = new MemoryStore();
+const KURENTO_WS_URL = 'ws://95.216.146.44:8888/kurento';
 
 //
 // Express
@@ -12,6 +14,7 @@ const KURENTO_WS_URL = 'ws://192.168.6.20:8888/kurento';
 var app = express();
 
 var sessionHandler = session({
+    //store: store,
     secret : 'none',
     rolling : true,
     resave : true,
@@ -32,13 +35,14 @@ app.listen(3000, function(){
 //
 // Web Socket
 // 
-var wss = ws.Server({
+var wss = new ws.Server({
      port: 8080,     
 });  
 
 wss.on('connection', function connect(newSocket, req){
     //let sessionId = newSocket.upgradeReq.session.id;
     let sessionId;
+    newSocket.upgradeReq = req;
     let request = newSocket.upgradeReq;
     let response = {
         writeHead : {}
